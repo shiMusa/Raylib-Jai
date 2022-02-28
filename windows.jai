@@ -46,7 +46,7 @@ RAYWHITE   :: Color.{ 245, 245, 245, 255 };   // My own White (raylib logo)
 //     false :: 0;
 //     true  :: 1;
 // }
-va_list :: *void; // added after recomendation by gilesc - Fehse 2022-02-28
+va_list :: *void; // added after recomendation by Gatza - Fehse 2022-02-28
 
 // Vector2, 2 components
 Vector2 :: struct {

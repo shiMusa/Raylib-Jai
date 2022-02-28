@@ -12,7 +12,7 @@ PI :: 3.14159265358979323846;
 
 // Some Basic Colors
 // NOTE: Custom raylib color palette for amazing visuals on WHITE background
-// * anually added - Fehse 2022-02-28
+// * manually added - Fehse 2022-02-28
 LIGHTGRAY  :: Color.{ 200, 200, 200, 255 };   // Light Gray
 GRAY       :: Color.{ 130, 130, 130, 255 };   // Gray
 DARKGRAY   :: Color.{ 80, 80, 80, 255 }   ;   // Dark Gray

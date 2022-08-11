@@ -6,47 +6,81 @@
 
 
 
-RAYLIB_VERSION :: "4.0";
+RAYLIB_VERSION :: "4.2";
 
 PI :: 3.14159265358979323846;
 
-// Some Basic Colors
-// NOTE: Custom raylib color palette for amazing visuals on WHITE background
-// * manually added - Fehse 2022-02-28
-LIGHTGRAY  :: Color.{ 200, 200, 200, 255 };   // Light Gray
-GRAY       :: Color.{ 130, 130, 130, 255 };   // Gray
-DARKGRAY   :: Color.{ 80, 80, 80, 255 }   ;   // Dark Gray
-YELLOW     :: Color.{ 253, 249, 0, 255 }  ;   // Yellow
-GOLD       :: Color.{ 255, 203, 0, 255 }  ;   // Gold
-ORANGE     :: Color.{ 255, 161, 0, 255 }  ;   // Orange
-PINK       :: Color.{ 255, 109, 194, 255 };   // Pink
-RED        :: Color.{ 230, 41, 55, 255 }  ;   // Red
-MAROON     :: Color.{ 190, 33, 55, 255 }  ;   // Maroon
-GREEN      :: Color.{ 0, 228, 48, 255 }   ;   // Green
-LIME       :: Color.{ 0, 158, 47, 255 }   ;   // Lime
-DARKGREEN  :: Color.{ 0, 117, 44, 255 }   ;   // Dark Green
-SKYBLUE    :: Color.{ 102, 191, 255, 255 };   // Sky Blue
-BLUE       :: Color.{ 0, 121, 241, 255 }  ;   // Blue
-DARKBLUE   :: Color.{ 0, 82, 172, 255 }   ;   // Dark Blue
-PURPLE     :: Color.{ 200, 122, 255, 255 };   // Purple
-VIOLET     :: Color.{ 135, 60, 190, 255 } ;   // Violet
-DARKPURPLE :: Color.{ 112, 31, 126, 255 } ;   // Dark Purple
-BEIGE      :: Color.{ 211, 176, 131, 255 };   // Beige
-BROWN      :: Color.{ 127, 106, 79, 255 } ;   // Brown
-DARKBROWN  :: Color.{ 76, 63, 47, 255 }   ;   // Dark Brown
-WHITE      :: Color.{ 255, 255, 255, 255 };   // White
-BLACK      :: Color.{ 0, 0, 0, 255 }      ;   // Black
-BLANK      :: Color.{ 0, 0, 0, 0 }        ;   // Blank (Transparent)
-MAGENTA    :: Color.{ 255, 0, 255, 255 }  ;   // Magenta
-RAYWHITE   :: Color.{ 245, 245, 245, 255 };   // My own White (raylib logo)
+DEG2RAD :: PI/180.0;
 
-// * not necessary - Fehse 2022-02-28
-// * Note: In some assertions below, the size-check will fail because size_of(bool) != 4 anymore. Those asserts got commented out. - Fehse 2022-02-28
-// bool :: enum s32 {
-//     false :: 0;
-//     true  :: 1;
-// }
-va_list :: *void; // added after recomendation by Gatza - Fehse 2022-02-28
+RAD2DEG :: 180.0/PI;
+
+DetachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
+
+AttachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
+
+SetAudioStreamCallback :: (stream: AudioStream, callback: AudioCallback) -> void #foreign raylib;
+
+SetAudioStreamBufferSizeDefault :: (size: s32) -> void #foreign raylib;
+
+SetAudioStreamPan :: (stream: AudioStream, pan: float) -> void #foreign raylib;
+
+SetAudioStreamPitch :: (stream: AudioStream, pitch: float) -> void #foreign raylib;
+
+SetAudioStreamVolume :: (stream: AudioStream, volume: float) -> void #foreign raylib;
+
+StopAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+
+IsAudioStreamPlaying :: (stream: AudioStream) -> bool #foreign raylib;
+
+ResumeAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+
+PauseAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+
+PlayAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+
+IsAudioStreamProcessed :: (stream: AudioStream) -> bool #foreign raylib;
+
+UpdateAudioStream :: (stream: AudioStream, data: *void, frameCount: s32) -> void #foreign raylib;
+
+UnloadAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+
+// AudioStream management functions
+LoadAudioStream :: (sampleRate: u32, sampleSize: u32, channels: u32) -> AudioStream #foreign raylib;
+
+GetMusicTimePlayed :: (music: Music) -> float #foreign raylib;
+
+GetMusicTimeLength :: (music: Music) -> float #foreign raylib;
+
+SetMusicPan :: (music: Music, pan: float) -> void #foreign raylib;
+
+SetMusicPitch :: (music: Music, pitch: float) -> void #foreign raylib;
+
+SetMusicVolume :: (music: Music, volume: float) -> void #foreign raylib;
+
+SeekMusicStream :: (music: Music, position: float) -> void #foreign raylib;
+
+ResumeMusicStream :: (music: Music) -> void #foreign raylib;
+
+PauseMusicStream :: (music: Music) -> void #foreign raylib;
+
+StopMusicStream :: (music: Music) -> void #foreign raylib;
+
+UpdateMusicStream :: (music: Music) -> void #foreign raylib;
+
+IsMusicStreamPlaying :: (music: Music) -> bool #foreign raylib;
+
+PlayMusicStream :: (music: Music) -> void #foreign raylib;
+
+UnloadMusicStream :: (music: Music) -> void #foreign raylib;
+
+LoadMusicStreamFromMemory :: (fileType: *u8, data: *u8, dataSize: s32) -> Music #foreign raylib;
+
+// Music management functions
+LoadMusicStream :: (fileName: *u8) -> Music #foreign raylib;
+
+UnloadWaveSamples :: (samples: *float) -> void #foreign raylib;
+
+LoadWaveSamples :: (wave: Wave) -> *float #foreign raylib;
 
 // Vector2, 2 components
 Vector2 :: struct {
@@ -397,7 +431,7 @@ Mesh :: struct {
 
     vertices:      *float; // Vertex position (XYZ - 3 components per vertex) (shader-location = 0)
     texcoords:     *float; // Vertex texture coordinates (UV - 2 components per vertex) (shader-location = 1)
-    texcoords2:    *float; // Vertex second texture coordinates (useful for lightmaps) (shader-location = 5)
+    texcoords2:    *float; // Vertex texture second coordinates (UV - 2 components per vertex) (shader-location = 5)
     normals:       *float; // Vertex normals (XYZ - 3 components per vertex) (shader-location = 2)
     tangents:      *float; // Vertex tangents (XYZW - 4 components per vertex) (shader-location = 4)
     colors:        *u8; // Vertex colors (RGBA - 4 components per vertex) (shader-location = 3)
@@ -606,7 +640,7 @@ RayCollision :: struct {
 #run {
     instance: RayCollision;
     assert(((cast(*void)(*instance.hit)) - cast(*void)(*instance)) == 0, "RayCollision.hit has unexpected offset % instead of 0", ((cast(*void)(*instance.hit)) - cast(*void)(*instance)));
-    // assert(size_of(type_of(RayCollision.hit)) == 4, "RayCollision.hit has unexpected size % instead of 4", size_of(type_of(RayCollision.hit)));
+    assert(size_of(type_of(RayCollision.hit)) == 1, "RayCollision.hit has unexpected size % instead of 1", size_of(type_of(RayCollision.hit)));
     assert(((cast(*void)(*instance.distance)) - cast(*void)(*instance)) == 4, "RayCollision.distance has unexpected offset % instead of 4", ((cast(*void)(*instance.distance)) - cast(*void)(*instance)));
     assert(size_of(type_of(RayCollision.distance)) == 4, "RayCollision.distance has unexpected size % instead of 4", size_of(type_of(RayCollision.distance)));
     assert(((cast(*void)(*instance.point)) - cast(*void)(*instance)) == 8, "RayCollision.point has unexpected offset % instead of 8", ((cast(*void)(*instance.point)) - cast(*void)(*instance)));
@@ -654,10 +688,12 @@ Wave :: struct {
 }
 
 rAudioBuffer :: struct {}
+rAudioProcessor :: struct {}
 
 // AudioStream, custom audio stream
 AudioStream :: struct {
     buffer:     *rAudioBuffer; // Pointer to internal data used by the audio system
+    processor:  *rAudioProcessor; // Pointer to internal data processor, useful for audio effects
 
     sampleRate: u32; // Frequency (samples per second)
     sampleSize: u32; // Bit depth (bits per sample): 8, 16, 32 (24 not supported)
@@ -667,13 +703,15 @@ AudioStream :: struct {
     instance: AudioStream;
     assert(((cast(*void)(*instance.buffer)) - cast(*void)(*instance)) == 0, "AudioStream.buffer has unexpected offset % instead of 0", ((cast(*void)(*instance.buffer)) - cast(*void)(*instance)));
     assert(size_of(type_of(AudioStream.buffer)) == 8, "AudioStream.buffer has unexpected size % instead of 8", size_of(type_of(AudioStream.buffer)));
-    assert(((cast(*void)(*instance.sampleRate)) - cast(*void)(*instance)) == 8, "AudioStream.sampleRate has unexpected offset % instead of 8", ((cast(*void)(*instance.sampleRate)) - cast(*void)(*instance)));
+    assert(((cast(*void)(*instance.processor)) - cast(*void)(*instance)) == 8, "AudioStream.processor has unexpected offset % instead of 8", ((cast(*void)(*instance.processor)) - cast(*void)(*instance)));
+    assert(size_of(type_of(AudioStream.processor)) == 8, "AudioStream.processor has unexpected size % instead of 8", size_of(type_of(AudioStream.processor)));
+    assert(((cast(*void)(*instance.sampleRate)) - cast(*void)(*instance)) == 16, "AudioStream.sampleRate has unexpected offset % instead of 16", ((cast(*void)(*instance.sampleRate)) - cast(*void)(*instance)));
     assert(size_of(type_of(AudioStream.sampleRate)) == 4, "AudioStream.sampleRate has unexpected size % instead of 4", size_of(type_of(AudioStream.sampleRate)));
-    assert(((cast(*void)(*instance.sampleSize)) - cast(*void)(*instance)) == 12, "AudioStream.sampleSize has unexpected offset % instead of 12", ((cast(*void)(*instance.sampleSize)) - cast(*void)(*instance)));
+    assert(((cast(*void)(*instance.sampleSize)) - cast(*void)(*instance)) == 20, "AudioStream.sampleSize has unexpected offset % instead of 20", ((cast(*void)(*instance.sampleSize)) - cast(*void)(*instance)));
     assert(size_of(type_of(AudioStream.sampleSize)) == 4, "AudioStream.sampleSize has unexpected size % instead of 4", size_of(type_of(AudioStream.sampleSize)));
-    assert(((cast(*void)(*instance.channels)) - cast(*void)(*instance)) == 16, "AudioStream.channels has unexpected offset % instead of 16", ((cast(*void)(*instance.channels)) - cast(*void)(*instance)));
+    assert(((cast(*void)(*instance.channels)) - cast(*void)(*instance)) == 24, "AudioStream.channels has unexpected offset % instead of 24", ((cast(*void)(*instance.channels)) - cast(*void)(*instance)));
     assert(size_of(type_of(AudioStream.channels)) == 4, "AudioStream.channels has unexpected size % instead of 4", size_of(type_of(AudioStream.channels)));
-    assert(size_of(AudioStream) == 24, "AudioStream has size % instead of 24", size_of(AudioStream));
+    assert(size_of(AudioStream) == 32, "AudioStream has size % instead of 32", size_of(AudioStream));
 }
 
 // Sound
@@ -684,10 +722,10 @@ Sound :: struct {
 #run {
     instance: Sound;
     assert(((cast(*void)(*instance.stream)) - cast(*void)(*instance)) == 0, "Sound.stream has unexpected offset % instead of 0", ((cast(*void)(*instance.stream)) - cast(*void)(*instance)));
-    assert(size_of(type_of(Sound.stream)) == 24, "Sound.stream has unexpected size % instead of 24", size_of(type_of(Sound.stream)));
-    assert(((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)) == 24, "Sound.frameCount has unexpected offset % instead of 24", ((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)));
+    assert(size_of(type_of(Sound.stream)) == 32, "Sound.stream has unexpected size % instead of 32", size_of(type_of(Sound.stream)));
+    assert(((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)) == 32, "Sound.frameCount has unexpected offset % instead of 32", ((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)));
     assert(size_of(type_of(Sound.frameCount)) == 4, "Sound.frameCount has unexpected size % instead of 4", size_of(type_of(Sound.frameCount)));
-    assert(size_of(Sound) == 32, "Sound has size % instead of 32", size_of(Sound));
+    assert(size_of(Sound) == 40, "Sound has size % instead of 40", size_of(Sound));
 }
 
 // Music, audio stream, anything longer than ~10 seconds should be streamed
@@ -702,16 +740,16 @@ Music :: struct {
 #run {
     instance: Music;
     assert(((cast(*void)(*instance.stream)) - cast(*void)(*instance)) == 0, "Music.stream has unexpected offset % instead of 0", ((cast(*void)(*instance.stream)) - cast(*void)(*instance)));
-    assert(size_of(type_of(Music.stream)) == 24, "Music.stream has unexpected size % instead of 24", size_of(type_of(Music.stream)));
-    assert(((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)) == 24, "Music.frameCount has unexpected offset % instead of 24", ((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)));
+    assert(size_of(type_of(Music.stream)) == 32, "Music.stream has unexpected size % instead of 32", size_of(type_of(Music.stream)));
+    assert(((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)) == 32, "Music.frameCount has unexpected offset % instead of 32", ((cast(*void)(*instance.frameCount)) - cast(*void)(*instance)));
     assert(size_of(type_of(Music.frameCount)) == 4, "Music.frameCount has unexpected size % instead of 4", size_of(type_of(Music.frameCount)));
-    assert(((cast(*void)(*instance.looping)) - cast(*void)(*instance)) == 28, "Music.looping has unexpected offset % instead of 28", ((cast(*void)(*instance.looping)) - cast(*void)(*instance)));
-    // assert(size_of(type_of(Music.looping)) == 4, "Music.looping has unexpected size % instead of 4", size_of(type_of(Music.looping)));
-    assert(((cast(*void)(*instance.ctxType)) - cast(*void)(*instance)) == 32, "Music.ctxType has unexpected offset % instead of 32", ((cast(*void)(*instance.ctxType)) - cast(*void)(*instance)));
+    assert(((cast(*void)(*instance.looping)) - cast(*void)(*instance)) == 36, "Music.looping has unexpected offset % instead of 36", ((cast(*void)(*instance.looping)) - cast(*void)(*instance)));
+    assert(size_of(type_of(Music.looping)) == 1, "Music.looping has unexpected size % instead of 1", size_of(type_of(Music.looping)));
+    assert(((cast(*void)(*instance.ctxType)) - cast(*void)(*instance)) == 40, "Music.ctxType has unexpected offset % instead of 40", ((cast(*void)(*instance.ctxType)) - cast(*void)(*instance)));
     assert(size_of(type_of(Music.ctxType)) == 4, "Music.ctxType has unexpected size % instead of 4", size_of(type_of(Music.ctxType)));
-    assert(((cast(*void)(*instance.ctxData)) - cast(*void)(*instance)) == 40, "Music.ctxData has unexpected offset % instead of 40", ((cast(*void)(*instance.ctxData)) - cast(*void)(*instance)));
+    assert(((cast(*void)(*instance.ctxData)) - cast(*void)(*instance)) == 48, "Music.ctxData has unexpected offset % instead of 48", ((cast(*void)(*instance.ctxData)) - cast(*void)(*instance)));
     assert(size_of(type_of(Music.ctxData)) == 8, "Music.ctxData has unexpected size % instead of 8", size_of(type_of(Music.ctxData)));
-    assert(size_of(Music) == 48, "Music has size % instead of 48", size_of(Music));
+    assert(size_of(Music) == 56, "Music has size % instead of 56", size_of(Music));
 }
 
 // VrDeviceInfo, Head-Mounted-Display device parameters
@@ -784,6 +822,23 @@ VrStereoConfig :: struct {
     assert(size_of(VrStereoConfig) == 304, "VrStereoConfig has size % instead of 304", size_of(VrStereoConfig));
 }
 
+// File path list
+FilePathList :: struct {
+    capacity: u32; // Filepaths max entries
+    count:    u32; // Filepaths entries count
+    paths:    **u8; // Filepaths entries
+}
+#run {
+    instance: FilePathList;
+    assert(((cast(*void)(*instance.capacity)) - cast(*void)(*instance)) == 0, "FilePathList.capacity has unexpected offset % instead of 0", ((cast(*void)(*instance.capacity)) - cast(*void)(*instance)));
+    assert(size_of(type_of(FilePathList.capacity)) == 4, "FilePathList.capacity has unexpected size % instead of 4", size_of(type_of(FilePathList.capacity)));
+    assert(((cast(*void)(*instance.count)) - cast(*void)(*instance)) == 4, "FilePathList.count has unexpected offset % instead of 4", ((cast(*void)(*instance.count)) - cast(*void)(*instance)));
+    assert(size_of(type_of(FilePathList.count)) == 4, "FilePathList.count has unexpected size % instead of 4", size_of(type_of(FilePathList.count)));
+    assert(((cast(*void)(*instance.paths)) - cast(*void)(*instance)) == 8, "FilePathList.paths has unexpected offset % instead of 8", ((cast(*void)(*instance.paths)) - cast(*void)(*instance)));
+    assert(size_of(type_of(FilePathList.paths)) == 8, "FilePathList.paths has unexpected size % instead of 8", size_of(type_of(FilePathList.paths)));
+    assert(size_of(FilePathList) == 16, "FilePathList has size % instead of 16", size_of(FilePathList));
+}
+
 //----------------------------------------------------------------------------------
 // Enumerators Definition
 //----------------------------------------------------------------------------------
@@ -791,35 +846,37 @@ VrStereoConfig :: struct {
 // NOTE: Every bit registers one state (use it with bit masks)
 // By default all flags are set to 0
 ConfigFlags :: enum s32 {
-    VSYNC_HINT         :: 64;
-    FULLSCREEN_MODE    :: 2;
-    WINDOW_RESIZABLE   :: 4;
-    WINDOW_UNDECORATED :: 8;
-    WINDOW_HIDDEN      :: 128;
-    WINDOW_MINIMIZED   :: 512;
-    WINDOW_MAXIMIZED   :: 1024;
-    WINDOW_UNFOCUSED   :: 2048;
-    WINDOW_TOPMOST     :: 4096;
-    WINDOW_ALWAYS_RUN  :: 256;
-    WINDOW_TRANSPARENT :: 16;
-    WINDOW_HIGHDPI     :: 8192;
-    MSAA_4X_HINT       :: 32;
-    INTERLACED_HINT    :: 65536;
+    VSYNC_HINT               :: 64;
+    FULLSCREEN_MODE          :: 2;
+    WINDOW_RESIZABLE         :: 4;
+    WINDOW_UNDECORATED       :: 8;
+    WINDOW_HIDDEN            :: 128;
+    WINDOW_MINIMIZED         :: 512;
+    WINDOW_MAXIMIZED         :: 1024;
+    WINDOW_UNFOCUSED         :: 2048;
+    WINDOW_TOPMOST           :: 4096;
+    WINDOW_ALWAYS_RUN        :: 256;
+    WINDOW_TRANSPARENT       :: 16;
+    WINDOW_HIGHDPI           :: 8192;
+    WINDOW_MOUSE_PASSTHROUGH :: 16384;
+    MSAA_4X_HINT             :: 32;
+    INTERLACED_HINT          :: 65536;
 
-    FLAG_VSYNC_HINT         :: VSYNC_HINT;
-    FLAG_FULLSCREEN_MODE    :: FULLSCREEN_MODE;
-    FLAG_WINDOW_RESIZABLE   :: WINDOW_RESIZABLE;
-    FLAG_WINDOW_UNDECORATED :: WINDOW_UNDECORATED;
-    FLAG_WINDOW_HIDDEN      :: WINDOW_HIDDEN;
-    FLAG_WINDOW_MINIMIZED   :: WINDOW_MINIMIZED;
-    FLAG_WINDOW_MAXIMIZED   :: WINDOW_MAXIMIZED;
-    FLAG_WINDOW_UNFOCUSED   :: WINDOW_UNFOCUSED;
-    FLAG_WINDOW_TOPMOST     :: WINDOW_TOPMOST;
-    FLAG_WINDOW_ALWAYS_RUN  :: WINDOW_ALWAYS_RUN;
-    FLAG_WINDOW_TRANSPARENT :: WINDOW_TRANSPARENT;
-    FLAG_WINDOW_HIGHDPI     :: WINDOW_HIGHDPI;
-    FLAG_MSAA_4X_HINT       :: MSAA_4X_HINT;
-    FLAG_INTERLACED_HINT    :: INTERLACED_HINT;
+    FLAG_VSYNC_HINT               :: VSYNC_HINT;
+    FLAG_FULLSCREEN_MODE          :: FULLSCREEN_MODE;
+    FLAG_WINDOW_RESIZABLE         :: WINDOW_RESIZABLE;
+    FLAG_WINDOW_UNDECORATED       :: WINDOW_UNDECORATED;
+    FLAG_WINDOW_HIDDEN            :: WINDOW_HIDDEN;
+    FLAG_WINDOW_MINIMIZED         :: WINDOW_MINIMIZED;
+    FLAG_WINDOW_MAXIMIZED         :: WINDOW_MAXIMIZED;
+    FLAG_WINDOW_UNFOCUSED         :: WINDOW_UNFOCUSED;
+    FLAG_WINDOW_TOPMOST           :: WINDOW_TOPMOST;
+    FLAG_WINDOW_ALWAYS_RUN        :: WINDOW_ALWAYS_RUN;
+    FLAG_WINDOW_TRANSPARENT       :: WINDOW_TRANSPARENT;
+    FLAG_WINDOW_HIGHDPI           :: WINDOW_HIGHDPI;
+    FLAG_WINDOW_MOUSE_PASSTHROUGH :: WINDOW_MOUSE_PASSTHROUGH;
+    FLAG_MSAA_4X_HINT             :: MSAA_4X_HINT;
+    FLAG_INTERLACED_HINT          :: INTERLACED_HINT;
 }
 
 // Trace log level
@@ -1413,19 +1470,21 @@ FontType :: enum s32 {
 
 // Color blending modes (pre-defined)
 BlendMode :: enum s32 {
-    ALPHA           :: 0;
-    ADDITIVE        :: 1;
-    MULTIPLIED      :: 2;
-    ADD_COLORS      :: 3;
-    SUBTRACT_COLORS :: 4;
-    CUSTOM          :: 5;
+    ALPHA             :: 0;
+    ADDITIVE          :: 1;
+    MULTIPLIED        :: 2;
+    ADD_COLORS        :: 3;
+    SUBTRACT_COLORS   :: 4;
+    ALPHA_PREMULTIPLY :: 5;
+    CUSTOM            :: 6;
 
-    BLEND_ALPHA           :: ALPHA;
-    BLEND_ADDITIVE        :: ADDITIVE;
-    BLEND_MULTIPLIED      :: MULTIPLIED;
-    BLEND_ADD_COLORS      :: ADD_COLORS;
-    BLEND_SUBTRACT_COLORS :: SUBTRACT_COLORS;
-    BLEND_CUSTOM          :: CUSTOM;
+    BLEND_ALPHA             :: ALPHA;
+    BLEND_ADDITIVE          :: ADDITIVE;
+    BLEND_MULTIPLIED        :: MULTIPLIED;
+    BLEND_ADD_COLORS        :: ADD_COLORS;
+    BLEND_SUBTRACT_COLORS   :: SUBTRACT_COLORS;
+    BLEND_ALPHA_PREMULTIPLY :: ALPHA_PREMULTIPLY;
+    BLEND_CUSTOM            :: CUSTOM;
 }
 
 // Gesture
@@ -1523,9 +1582,12 @@ SetWindowPosition :: (x: s32, y: s32) -> void #foreign raylib;
 SetWindowMonitor :: (monitor: s32) -> void #foreign raylib;
 SetWindowMinSize :: (width: s32, height: s32) -> void #foreign raylib;
 SetWindowSize :: (width: s32, height: s32) -> void #foreign raylib;
+SetWindowOpacity :: (opacity: float) -> void #foreign raylib;
 GetWindowHandle :: () -> *void #foreign raylib;
 GetScreenWidth :: () -> s32 #foreign raylib;
 GetScreenHeight :: () -> s32 #foreign raylib;
+GetRenderWidth :: () -> s32 #foreign raylib;
+GetRenderHeight :: () -> s32 #foreign raylib;
 GetMonitorCount :: () -> s32 #foreign raylib;
 GetCurrentMonitor :: () -> s32 #foreign raylib;
 GetMonitorPosition :: (monitor: s32) -> Vector2 #foreign raylib;
@@ -1539,6 +1601,8 @@ GetWindowScaleDPI :: () -> Vector2 #foreign raylib;
 GetMonitorName :: (monitor: s32) -> *u8 #foreign raylib;
 SetClipboardText :: (text: *u8) -> void #foreign raylib;
 GetClipboardText :: () -> *u8 #foreign raylib;
+EnableEventWaiting :: () -> void #foreign raylib;
+DisableEventWaiting :: () -> void #foreign raylib;
 
 // Custom frame control functions
 // NOTE: Those functions are intended for advance users that want full control over the frame processing
@@ -1546,7 +1610,7 @@ GetClipboardText :: () -> *u8 #foreign raylib;
 // To avoid that behaviour and control frame processes manually, enable in config.h: SUPPORT_CUSTOM_FRAME_CONTROL
 SwapScreenBuffer :: () -> void #foreign raylib;
 PollInputEvents :: () -> void #foreign raylib;
-WaitTime :: (ms: float) -> void #foreign raylib;
+WaitTime :: (seconds: float64) -> void #foreign raylib;
 
 // Cursor-related functions
 ShowCursor :: () -> void #foreign raylib;
@@ -1596,9 +1660,9 @@ GetMouseRay :: (mousePosition: Vector2, camera: Camera) -> Ray #foreign raylib;
 GetCameraMatrix :: (camera: Camera) -> Matrix #foreign raylib;
 GetCameraMatrix2D :: (camera: Camera2D) -> Matrix #foreign raylib;
 GetWorldToScreen :: (position: Vector3, camera: Camera) -> Vector2 #foreign raylib;
+GetScreenToWorld2D :: (position: Vector2, camera: Camera2D) -> Vector2 #foreign raylib;
 GetWorldToScreenEx :: (position: Vector3, camera: Camera, width: s32, height: s32) -> Vector2 #foreign raylib;
 GetWorldToScreen2D :: (position: Vector2, camera: Camera2D) -> Vector2 #foreign raylib;
-GetScreenToWorld2D :: (position: Vector2, camera: Camera2D) -> Vector2 #foreign raylib;
 
 // Timing-related functions
 SetTargetFPS :: (fps: s32) -> void #foreign raylib;
@@ -1612,11 +1676,21 @@ SetRandomSeed :: (seed: u32) -> void #foreign raylib;
 TakeScreenshot :: (fileName: *u8) -> void #foreign raylib;
 SetConfigFlags :: (flags: u32) -> void #foreign raylib;
 
-TraceLog :: (logLevel: s32, text: *u8, __args: ..Any) -> void #foreign raylib;
+TraceLog_CFormat :: (logLevel: s32, text: *u8, __args: ..Any) -> void #foreign raylib "TraceLog";
+TraceLog :: (logLevel: s32, text: string, __args: ..Any) {
+    push_allocator(temp);
+    formatted_text_builder: String_Builder;
+    print_to_builder(*formatted_text_builder, text, ..__args);
+    append(*formatted_text_builder, "\0");
+    formatted_text := builder_to_string(*formatted_text_builder);
+    TraceLog_CFormat(logLevel, "%s", formatted_text.data);
+} @PrintLike
 SetTraceLogLevel :: (logLevel: s32) -> void #foreign raylib;
 MemAlloc :: (size: s32) -> *void #foreign raylib;
 MemRealloc :: (ptr: *void, size: s32) -> *void #foreign raylib;
 MemFree :: (ptr: *void) -> void #foreign raylib;
+
+OpenURL :: (url: *u8) -> void #foreign raylib;
 
 // Set custom callbacks
 // WARNING: Callbacks setup is intended for advance users
@@ -1630,37 +1704,36 @@ SetSaveFileTextCallback :: (callback: SaveFileTextCallback) -> void #foreign ray
 LoadFileData :: (fileName: *u8, bytesRead: *u32) -> *u8 #foreign raylib;
 UnloadFileData :: (data: *u8) -> void #foreign raylib;
 SaveFileData :: (fileName: *u8, data: *void, bytesToWrite: u32) -> bool #foreign raylib;
+ExportDataAsCode :: (data: *u8, size: u32, fileName: *u8) -> bool #foreign raylib;
 LoadFileText :: (fileName: *u8) -> *u8 #foreign raylib;
 UnloadFileText :: (text: *u8) -> void #foreign raylib;
 SaveFileText :: (fileName: *u8, text: *u8) -> bool #foreign raylib;
 FileExists :: (fileName: *u8) -> bool #foreign raylib;
 DirectoryExists :: (dirPath: *u8) -> bool #foreign raylib;
 IsFileExtension :: (fileName: *u8, ext: *u8) -> bool #foreign raylib;
+GetFileLength :: (fileName: *u8) -> s32 #foreign raylib;
 GetFileExtension :: (fileName: *u8) -> *u8 #foreign raylib;
 GetFileName :: (filePath: *u8) -> *u8 #foreign raylib;
 GetFileNameWithoutExt :: (filePath: *u8) -> *u8 #foreign raylib;
 GetDirectoryPath :: (filePath: *u8) -> *u8 #foreign raylib;
 GetPrevDirectoryPath :: (dirPath: *u8) -> *u8 #foreign raylib;
 GetWorkingDirectory :: () -> *u8 #foreign raylib;
-GetDirectoryFiles :: (dirPath: *u8, count: *s32) -> **u8 #foreign raylib;
-ClearDirectoryFiles :: () -> void #foreign raylib;
+GetApplicationDirectory :: () -> *u8 #foreign raylib;
 ChangeDirectory :: (dir: *u8) -> bool #foreign raylib;
+IsPathFile :: (path: *u8) -> bool #foreign raylib;
+LoadDirectoryFiles :: (dirPath: *u8) -> FilePathList #foreign raylib;
+LoadDirectoryFilesEx :: (basePath: *u8, filter: *u8, scanSubdirs: bool) -> FilePathList #foreign raylib;
+UnloadDirectoryFiles :: (files: FilePathList) -> void #foreign raylib;
 IsFileDropped :: () -> bool #foreign raylib;
-GetDroppedFiles :: (count: *s32) -> **u8 #foreign raylib;
-ClearDroppedFiles :: () -> void #foreign raylib;
+LoadDroppedFiles :: () -> FilePathList #foreign raylib;
+UnloadDroppedFiles :: (files: FilePathList) -> void #foreign raylib;
 GetFileModTime :: (fileName: *u8) -> s32 #foreign raylib;
 
 // Compression/Encoding functionality
-CompressData :: (data: *u8, dataLength: s32, compDataLength: *s32) -> *u8 #foreign raylib;
-DecompressData :: (compData: *u8, compDataLength: s32, dataLength: *s32) -> *u8 #foreign raylib;
-EncodeDataBase64 :: (data: *u8, dataLength: s32, outputLength: *s32) -> *u8 #foreign raylib;
-DecodeDataBase64 :: (data: *u8, outputLength: *s32) -> *u8 #foreign raylib;
-
-// Persistent storage management
-SaveStorageValue :: (position: u32, value: s32) -> bool #foreign raylib;
-LoadStorageValue :: (position: u32) -> s32 #foreign raylib;
-
-OpenURL :: (url: *u8) -> void #foreign raylib;
+CompressData :: (data: *u8, dataSize: s32, compDataSize: *s32) -> *u8 #foreign raylib;
+DecompressData :: (compData: *u8, compDataSize: s32, dataSize: *s32) -> *u8 #foreign raylib;
+EncodeDataBase64 :: (data: *u8, dataSize: s32, outputSize: *s32) -> *u8 #foreign raylib;
+DecodeDataBase64 :: (data: *u8, outputSize: *s32) -> *u8 #foreign raylib;
 
 // Input-related functions: keyboard
 IsKeyPressed :: (key: s32) -> bool #foreign raylib;
@@ -1696,6 +1769,7 @@ SetMousePosition :: (x: s32, y: s32) -> void #foreign raylib;
 SetMouseOffset :: (offsetX: s32, offsetY: s32) -> void #foreign raylib;
 SetMouseScale :: (scaleX: float, scaleY: float) -> void #foreign raylib;
 GetMouseWheelMove :: () -> float #foreign raylib;
+GetMouseWheelMoveV :: () -> Vector2 #foreign raylib;
 SetMouseCursor :: (cursor: s32) -> void #foreign raylib;
 
 // Input-related functions: touch
@@ -1909,6 +1983,7 @@ LoadFontData :: (fileData: *u8, dataSize: s32, fontSize: s32, fontChars: *s32, g
 GenImageFontAtlas :: (chars: *GlyphInfo, recs: **Rectangle, glyphCount: s32, fontSize: s32, padding: s32, packMethod: s32) -> Image #foreign raylib;
 UnloadFontData :: (chars: *GlyphInfo, glyphCount: s32) -> void #foreign raylib;
 UnloadFont :: (font: Font) -> void #foreign raylib;
+ExportFontAsCode :: (font: Font, fileName: *u8) -> bool #foreign raylib;
 
 // Text drawing functions
 DrawFPS :: (posX: s32, posY: s32) -> void #foreign raylib;
@@ -1916,6 +1991,7 @@ DrawText :: (text: *u8, posX: s32, posY: s32, fontSize: s32, color: Color) -> vo
 DrawTextEx :: (font: Font, text: *u8, position: Vector2, fontSize: float, spacing: float, tint: Color) -> void #foreign raylib;
 DrawTextPro :: (font: Font, text: *u8, position: Vector2, origin: Vector2, rotation: float, fontSize: float, spacing: float, tint: Color) -> void #foreign raylib;
 DrawTextCodepoint :: (font: Font, codepoint: s32, position: Vector2, fontSize: float, tint: Color) -> void #foreign raylib;
+DrawTextCodepoints :: (font: Font, codepoints: *s32, count: s32, position: Vector2, fontSize: float, spacing: float, tint: Color) -> void #foreign raylib;
 
 // Text font info functions
 MeasureText :: (text: *u8, fontSize: s32) -> s32 #foreign raylib;
@@ -1937,7 +2013,15 @@ TextCodepointsToUTF8 :: (codepoints: *s32, length: s32) -> *u8 #foreign raylib;
 TextCopy :: (dst: *u8, src: *u8) -> s32 #foreign raylib;
 TextIsEqual :: (text1: *u8, text2: *u8) -> bool #foreign raylib;
 TextLength :: (text: *u8) -> u32 #foreign raylib;
-TextFormat :: (text: *u8, __args: ..Any) -> *u8 #foreign raylib;
+TextFormat_CFormat :: (text: *u8, __args: ..Any) -> *u8 #foreign raylib "TextFormat";
+TextFormat :: (text: string, __args: ..Any) -> *u8 {
+    push_allocator(temp);
+    formatted_text_builder: String_Builder;
+    print_to_builder(*formatted_text_builder, text, ..__args);
+    append(*formatted_text_builder, "\0");
+    formatted_text := builder_to_string(*formatted_text_builder);
+    return TextFormat_CFormat("%s", formatted_text.data);
+} @PrintLike
 TextSubtext :: (text: *u8, position: s32, length: s32) -> *u8 #foreign raylib;
 TextReplace :: (text: *u8, replace: *u8, by: *u8) -> *u8 #foreign raylib;
 TextInsert :: (text: *u8, insert: *u8, position: s32) -> *u8 #foreign raylib;
@@ -1999,7 +2083,6 @@ DrawMeshInstanced :: (mesh: Mesh, material: Material, transforms: *Matrix, insta
 ExportMesh :: (mesh: Mesh, fileName: *u8) -> bool #foreign raylib;
 GetMeshBoundingBox :: (mesh: Mesh) -> BoundingBox #foreign raylib;
 GenMeshTangents :: (mesh: *Mesh) -> void #foreign raylib;
-GenMeshBinormals :: (mesh: *Mesh) -> void #foreign raylib;
 
 // Mesh generation functions
 GenMeshPoly :: (sides: s32, radius: float) -> Mesh #foreign raylib;
@@ -2034,10 +2117,14 @@ CheckCollisionBoxes :: (box1: BoundingBox, box2: BoundingBox) -> bool #foreign r
 CheckCollisionBoxSphere :: (box: BoundingBox, center: Vector3, radius: float) -> bool #foreign raylib;
 GetRayCollisionSphere :: (ray: Ray, center: Vector3, radius: float) -> RayCollision #foreign raylib;
 GetRayCollisionBox :: (ray: Ray, box: BoundingBox) -> RayCollision #foreign raylib;
-GetRayCollisionModel :: (ray: Ray, model: Model) -> RayCollision #foreign raylib;
 GetRayCollisionMesh :: (ray: Ray, mesh: Mesh, transform: Matrix) -> RayCollision #foreign raylib;
 GetRayCollisionTriangle :: (ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3) -> RayCollision #foreign raylib;
 GetRayCollisionQuad :: (ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vector3) -> RayCollision #foreign raylib;
+
+//------------------------------------------------------------------------------------
+// Audio Loading and Playing Functions (Module: audio)
+//------------------------------------------------------------------------------------
+AudioCallback :: #type (a0: *void, a1: u32) -> void #c_call;
 
 // Audio device management functions
 InitAudioDevice :: () -> void #foreign raylib;
@@ -2067,41 +2154,10 @@ GetSoundsPlaying :: () -> s32 #foreign raylib;
 IsSoundPlaying :: (sound: Sound) -> bool #foreign raylib;
 SetSoundVolume :: (sound: Sound, volume: float) -> void #foreign raylib;
 SetSoundPitch :: (sound: Sound, pitch: float) -> void #foreign raylib;
-WaveFormat :: (wave: *Wave, sampleRate: s32, sampleSize: s32, channels: s32) -> void #foreign raylib;
+SetSoundPan :: (sound: Sound, pan: float) -> void #foreign raylib;
 WaveCopy :: (wave: Wave) -> Wave #foreign raylib;
 WaveCrop :: (wave: *Wave, initSample: s32, finalSample: s32) -> void #foreign raylib;
-LoadWaveSamples :: (wave: Wave) -> *float #foreign raylib;
-UnloadWaveSamples :: (samples: *float) -> void #foreign raylib;
-
-// Music management functions
-LoadMusicStream :: (fileName: *u8) -> Music #foreign raylib;
-LoadMusicStreamFromMemory :: (fileType: *u8, data: *u8, dataSize: s32) -> Music #foreign raylib;
-UnloadMusicStream :: (music: Music) -> void #foreign raylib;
-PlayMusicStream :: (music: Music) -> void #foreign raylib;
-IsMusicStreamPlaying :: (music: Music) -> bool #foreign raylib;
-UpdateMusicStream :: (music: Music) -> void #foreign raylib;
-StopMusicStream :: (music: Music) -> void #foreign raylib;
-PauseMusicStream :: (music: Music) -> void #foreign raylib;
-ResumeMusicStream :: (music: Music) -> void #foreign raylib;
-SeekMusicStream :: (music: Music, position: float) -> void #foreign raylib;
-SetMusicVolume :: (music: Music, volume: float) -> void #foreign raylib;
-SetMusicPitch :: (music: Music, pitch: float) -> void #foreign raylib;
-GetMusicTimeLength :: (music: Music) -> float #foreign raylib;
-GetMusicTimePlayed :: (music: Music) -> float #foreign raylib;
-
-// AudioStream management functions
-LoadAudioStream :: (sampleRate: u32, sampleSize: u32, channels: u32) -> AudioStream #foreign raylib;
-UnloadAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-UpdateAudioStream :: (stream: AudioStream, data: *void, frameCount: s32) -> void #foreign raylib;
-IsAudioStreamProcessed :: (stream: AudioStream) -> bool #foreign raylib;
-PlayAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-PauseAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-ResumeAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-IsAudioStreamPlaying :: (stream: AudioStream) -> bool #foreign raylib;
-StopAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-SetAudioStreamVolume :: (stream: AudioStream, volume: float) -> void #foreign raylib;
-SetAudioStreamPitch :: (stream: AudioStream, pitch: float) -> void #foreign raylib;
-SetAudioStreamBufferSizeDefault :: (size: s32) -> void #foreign raylib;
+WaveFormat :: (wave: *Wave, sampleRate: s32, sampleSize: s32, channels: s32) -> void #foreign raylib;
 
 #scope_file
 

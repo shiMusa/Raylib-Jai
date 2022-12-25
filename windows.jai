@@ -14,74 +14,6 @@ DEG2RAD :: PI/180.0;
 
 RAD2DEG :: 180.0/PI;
 
-DetachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
-
-AttachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
-
-SetAudioStreamCallback :: (stream: AudioStream, callback: AudioCallback) -> void #foreign raylib;
-
-SetAudioStreamBufferSizeDefault :: (size: s32) -> void #foreign raylib;
-
-SetAudioStreamPan :: (stream: AudioStream, pan: float) -> void #foreign raylib;
-
-SetAudioStreamPitch :: (stream: AudioStream, pitch: float) -> void #foreign raylib;
-
-SetAudioStreamVolume :: (stream: AudioStream, volume: float) -> void #foreign raylib;
-
-StopAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-
-IsAudioStreamPlaying :: (stream: AudioStream) -> bool #foreign raylib;
-
-ResumeAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-
-PauseAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-
-PlayAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-
-IsAudioStreamProcessed :: (stream: AudioStream) -> bool #foreign raylib;
-
-UpdateAudioStream :: (stream: AudioStream, data: *void, frameCount: s32) -> void #foreign raylib;
-
-UnloadAudioStream :: (stream: AudioStream) -> void #foreign raylib;
-
-// AudioStream management functions
-LoadAudioStream :: (sampleRate: u32, sampleSize: u32, channels: u32) -> AudioStream #foreign raylib;
-
-GetMusicTimePlayed :: (music: Music) -> float #foreign raylib;
-
-GetMusicTimeLength :: (music: Music) -> float #foreign raylib;
-
-SetMusicPan :: (music: Music, pan: float) -> void #foreign raylib;
-
-SetMusicPitch :: (music: Music, pitch: float) -> void #foreign raylib;
-
-SetMusicVolume :: (music: Music, volume: float) -> void #foreign raylib;
-
-SeekMusicStream :: (music: Music, position: float) -> void #foreign raylib;
-
-ResumeMusicStream :: (music: Music) -> void #foreign raylib;
-
-PauseMusicStream :: (music: Music) -> void #foreign raylib;
-
-StopMusicStream :: (music: Music) -> void #foreign raylib;
-
-UpdateMusicStream :: (music: Music) -> void #foreign raylib;
-
-IsMusicStreamPlaying :: (music: Music) -> bool #foreign raylib;
-
-PlayMusicStream :: (music: Music) -> void #foreign raylib;
-
-UnloadMusicStream :: (music: Music) -> void #foreign raylib;
-
-LoadMusicStreamFromMemory :: (fileType: *u8, data: *u8, dataSize: s32) -> Music #foreign raylib;
-
-// Music management functions
-LoadMusicStream :: (fileName: *u8) -> Music #foreign raylib;
-
-UnloadWaveSamples :: (samples: *float) -> void #foreign raylib;
-
-LoadWaveSamples :: (wave: Wave) -> *float #foreign raylib;
-
 // Vector2, 2 components
 Vector2 :: struct {
     x: float; // Vector x component
@@ -1552,11 +1484,11 @@ NPatchLayout :: enum s32 {
 
 // Callbacks to hook some internal functions
 // WARNING: This callbacks are intended for advance users
-TraceLogCallback :: #type (a0: s32, a1: *u8, a2: va_list) -> void #c_call;
-LoadFileDataCallback :: #type (a0: *u8, a1: *u32) -> *u8 #c_call;
-SaveFileDataCallback :: #type (a0: *u8, a1: *void, a2: u32) -> bool #c_call;
-LoadFileTextCallback :: #type (a0: *u8) -> *u8 #c_call;
-SaveFileTextCallback :: #type (a0: *u8, a1: *u8) -> bool #c_call;
+TraceLogCallback :: #type (logLevel: s32, text: *u8, args: va_list) -> void #c_call;
+LoadFileDataCallback :: #type (fileName: *u8, bytesRead: *u32) -> *u8 #c_call;
+SaveFileDataCallback :: #type (fileName: *u8, data: *void, bytesToWrite: u32) -> bool #c_call;
+LoadFileTextCallback :: #type (fileName: *u8) -> *u8 #c_call;
+SaveFileTextCallback :: #type (fileName: *u8, text: *u8) -> bool #c_call;
 
 // Window-related functions
 InitWindow :: (width: s32, height: s32, title: *u8) -> void #foreign raylib;
@@ -2124,7 +2056,7 @@ GetRayCollisionQuad :: (ray: Ray, p1: Vector3, p2: Vector3, p3: Vector3, p4: Vec
 //------------------------------------------------------------------------------------
 // Audio Loading and Playing Functions (Module: audio)
 //------------------------------------------------------------------------------------
-AudioCallback :: #type (a0: *void, a1: u32) -> void #c_call;
+AudioCallback :: #type (bufferData: *void, frames: u32) -> void #c_call;
 
 // Audio device management functions
 InitAudioDevice :: () -> void #foreign raylib;
@@ -2158,8 +2090,46 @@ SetSoundPan :: (sound: Sound, pan: float) -> void #foreign raylib;
 WaveCopy :: (wave: Wave) -> Wave #foreign raylib;
 WaveCrop :: (wave: *Wave, initSample: s32, finalSample: s32) -> void #foreign raylib;
 WaveFormat :: (wave: *Wave, sampleRate: s32, sampleSize: s32, channels: s32) -> void #foreign raylib;
+LoadWaveSamples :: (wave: Wave) -> *float #foreign raylib;
+UnloadWaveSamples :: (samples: *float) -> void #foreign raylib;
+
+// Music management functions
+LoadMusicStream :: (fileName: *u8) -> Music #foreign raylib;
+LoadMusicStreamFromMemory :: (fileType: *u8, data: *u8, dataSize: s32) -> Music #foreign raylib;
+UnloadMusicStream :: (music: Music) -> void #foreign raylib;
+PlayMusicStream :: (music: Music) -> void #foreign raylib;
+IsMusicStreamPlaying :: (music: Music) -> bool #foreign raylib;
+UpdateMusicStream :: (music: Music) -> void #foreign raylib;
+StopMusicStream :: (music: Music) -> void #foreign raylib;
+PauseMusicStream :: (music: Music) -> void #foreign raylib;
+ResumeMusicStream :: (music: Music) -> void #foreign raylib;
+SeekMusicStream :: (music: Music, position: float) -> void #foreign raylib;
+SetMusicVolume :: (music: Music, volume: float) -> void #foreign raylib;
+SetMusicPitch :: (music: Music, pitch: float) -> void #foreign raylib;
+SetMusicPan :: (music: Music, pan: float) -> void #foreign raylib;
+GetMusicTimeLength :: (music: Music) -> float #foreign raylib;
+GetMusicTimePlayed :: (music: Music) -> float #foreign raylib;
+
+// AudioStream management functions
+LoadAudioStream :: (sampleRate: u32, sampleSize: u32, channels: u32) -> AudioStream #foreign raylib;
+UnloadAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+UpdateAudioStream :: (stream: AudioStream, data: *void, frameCount: s32) -> void #foreign raylib;
+IsAudioStreamProcessed :: (stream: AudioStream) -> bool #foreign raylib;
+PlayAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+PauseAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+ResumeAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+IsAudioStreamPlaying :: (stream: AudioStream) -> bool #foreign raylib;
+StopAudioStream :: (stream: AudioStream) -> void #foreign raylib;
+SetAudioStreamVolume :: (stream: AudioStream, volume: float) -> void #foreign raylib;
+SetAudioStreamPitch :: (stream: AudioStream, pitch: float) -> void #foreign raylib;
+SetAudioStreamPan :: (stream: AudioStream, pan: float) -> void #foreign raylib;
+SetAudioStreamBufferSizeDefault :: (size: s32) -> void #foreign raylib;
+SetAudioStreamCallback :: (stream: AudioStream, callback: AudioCallback) -> void #foreign raylib;
+
+AttachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
+DetachAudioStreamProcessor :: (stream: AudioStream, processor: AudioCallback) -> void #foreign raylib;
 
 #scope_file
 
 #import "Basic"; // For assert
-raylib :: #foreign_library "./raylib";
+raylib :: #library "./raylib";
